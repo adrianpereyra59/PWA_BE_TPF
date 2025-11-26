@@ -1,0 +1,46 @@
+import AuthService from '../services/auth.service.js';
+
+class AuthController {
+  static async register(req, res) {
+    try {
+      const { username, email, password } = req.body;
+      if (!username) return res.status(400).json({ ok: false, message: 'username required' });
+      if (!email) return res.status(400).json({ ok: false, message: 'email required' });
+      if (!password || password.length < 6) return res.status(400).json({ ok: false, message: 'password too short' });
+
+      await AuthService.register(username, password, email);
+      res.json({ ok: true, message: 'User registered' });
+    } catch (err) {
+      console.error('register error', err);
+      const status = err.status || 500;
+      res.status(status).json({ ok: false, message: err.message || 'Internal server error' });
+    }
+  }
+
+  static async verifyEmail(req, res) {
+    try {
+      const { verification_token } = req.params;
+      await AuthService.verifyEmail(verification_token);
+      // redirect to frontend login
+      return res.redirect((process.env.FRONTEND_URL || process.env.URL_FRONTEND || '') + '/login');
+    } catch (err) {
+      console.error('verifyEmail error', err);
+      const status = err.status || 500;
+      res.status(status).json({ ok: false, message: err.message || 'Internal server error' });
+    }
+  }
+
+  static async login(req, res) {
+    try {
+      const { email, password } = req.body;
+      const { authorization_token, user } = await AuthService.login(email, password);
+      res.json({ ok: true, message: 'Logged in', data: { authorization_token, user: { id: user._id, email: user.email, name: user.name } } });
+    } catch (err) {
+      console.error('login error', err);
+      const status = err.status || 500;
+      res.status(status).json({ ok: false, message: err.message || 'Internal server error' });
+    }
+  }
+}
+
+export default AuthController;
