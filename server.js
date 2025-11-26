@@ -1,5 +1,5 @@
-import ENVIRONMENT from './config/environment.config.js';
-import connectMongoDB from './config/mongoDB.config.js';
+import ENVIRONMENT from './src/config/environment.config.js';
+import connectMongoDB from './src/config/mongoDB.config.js';
 import app from './app.js';
 
 (async () => {

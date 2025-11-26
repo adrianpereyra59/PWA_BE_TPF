@@ -2,13 +2,13 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import ENVIRONMENT from './config/environment.config.js';
+import ENVIRONMENT from './src/config/environment.config.js';
 
-import authRoutes from './routes/auth.router.js';
-import workspaceRoutes from './routes/workspace.route.js';
-import memberRoutes from './routes/member.router.js';
+import authRoutes from './src/routes/auth.router.js';
+import workspaceRoutes from './src/routes/workspace.route.js';
+import memberRoutes from './src/routes/member.router.js';
 
-import errorHandler from './utils/errorHandler.js';
+import errorHandler from './src/utils/errorHandler.js';
 
 const app = express();
 
