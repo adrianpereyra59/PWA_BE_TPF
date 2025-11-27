@@ -4,7 +4,7 @@ export default function errorHandler(err, req, res, next) {
   const status = err.status || 500;
   res.status(status).json({
     ok: false,
-    message: err.message || 'Internal Server Error',
+    message: err.message || 'Error interno del servidor',
     details: err.details || null,
   });
 }

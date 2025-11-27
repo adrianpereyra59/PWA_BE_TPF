@@ -10,7 +10,7 @@ class MessageController {
       res.status(201).json({ ok: true, data: { messages } });
     } catch (err) {
       console.error('message.create error', err);
-      res.status(500).json({ ok: false, message: 'Internal server error' });
+      res.status(500).json({ ok: false, message: 'error interno del servidor' });
     }
   }
 
@@ -21,7 +21,7 @@ class MessageController {
       res.status(200).json({ ok: true, data: { messages } });
     } catch (err) {
       console.error('message.getAll error', err);
-      res.status(500).json({ ok: false, message: 'Internal server error' });
+      res.status(500).json({ ok: false, message: 'error interno del servidor' });
     }
   }
 }

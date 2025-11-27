@@ -3,7 +3,7 @@ import ENVIRONMENT from './environment.config.js'
 
 let transporterPromise = (async () => {
   if (ENVIRONMENT.GMAIL_USERNAME && ENVIRONMENT.GMAIL_PASSWORD) {
-    console.log('Using Gmail transporter for emails')
+    console.log('Uso del transportador de Gmail para correos electrónicos')
     return nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -13,9 +13,9 @@ let transporterPromise = (async () => {
       tls: { rejectUnauthorized: false }
     })
   } else {
-    console.log('No Gmail credentials found — creating Ethereal test account for emails')
+    console.log('No se encontraron credenciales de Gmail — creando cuenta de prueba Ethereal para correos electrónicos')
     const testAccount = await nodemailer.createTestAccount()
-    console.info('Ethereal test account (dev):', { user: testAccount.user })
+    console.info('Cuenta de prueba Ethereal (dev):', { user: testAccount.user })
     return nodemailer.createTransport({
       host: 'smtp.ethereal.email',
       port: 587,

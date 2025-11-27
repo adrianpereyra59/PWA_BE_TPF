@@ -21,10 +21,10 @@ export async function getWorkspace(id) {
 
 export async function inviteMember(requestingMember, workspace, invitedEmail) {
   const user = await UserRepository.getByEmail(invitedEmail);
-  if (!user) throw { status: 404, message: 'User not found' };
+  if (!user) throw { status: 404, message: 'Usuario no registrado' };
 
   const existing = await MemberWorkspaceRepository.getMemberWorkspaceByUserIdAndWorkspaceId(user._id, workspace._id);
-  if (existing) throw { status: 409, message: 'User already member' };
+  if (existing) throw { status: 409, message: 'El usuario ya es miembro' };
 
   const inviteToken = jwt.sign({
     id_invited: user._id,
@@ -37,8 +37,8 @@ export async function inviteMember(requestingMember, workspace, invitedEmail) {
   await sendMail({
     from: ENVIRONMENT.GMAIL_USERNAME || 'no-reply@example.com',
     to: invitedEmail,
-    subject: 'Workspace invitation',
-    html: `<p>You've been invited to workspace ${workspace.name}.</p><p><a href="${acceptUrl}">Accept invitation</a></p>`
+    subject: 'Invitación al workspace',
+    html: `<p>Has sido invitado al workspace ${workspace.name}.</p><p><a href="${acceptUrl}">Aceptar invitación</a></p>`
   });
 
   return { ok: true };

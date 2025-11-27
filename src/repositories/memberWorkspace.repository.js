@@ -23,10 +23,10 @@ class MemberWorkspaceRepository {
   static async create({ user_id = null, email = null, workspace_id, role = 'member', status = 'pending' }) {
     if (user_id) {
       const existing = await MemberWorkspace.findOne({ user: user_id, workspace: workspace_id }).exec();
-      if (existing) throw new ServerError(400, 'User already member of the workspace');
+      if (existing) throw new ServerError(400, 'El usuario ya es miembro del espacio de trabajo');
     } else if (email) {
       const existingByEmail = await MemberWorkspace.findOne({ email: email, workspace: workspace_id }).exec();
-      if (existingByEmail) throw new ServerError(400, 'Invitation already exists for that email');
+      if (existingByEmail) throw new ServerError(400, 'Ya existe una invitación para ese correo electrónico');
     }
 
     const m = new MemberWorkspace({

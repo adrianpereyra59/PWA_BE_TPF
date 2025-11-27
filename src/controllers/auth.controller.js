@@ -4,16 +4,16 @@ class AuthController {
   static async register(req, res) {
     try {
       const { username, email, password } = req.body;
-      if (!username) return res.status(400).json({ ok: false, message: 'username required' });
-      if (!email) return res.status(400).json({ ok: false, message: 'email required' });
-      if (!password || password.length < 6) return res.status(400).json({ ok: false, message: 'password too short' });
+      if (!username) return res.status(400).json({ ok: false, message: 'username requerido' });
+      if (!email) return res.status(400).json({ ok: false, message: 'email requerido' });
+      if (!password || password.length < 6) return res.status(400).json({ ok: false, message: 'password demasiado corto' });
 
       await AuthService.register(username, password, email);
-      res.json({ ok: true, message: 'User registered' });
+      res.json({ ok: true, message: 'Usuario registrado' });
     } catch (err) {
       console.error('register error', err);
       const status = err.status || 500;
-      res.status(status).json({ ok: false, message: err.message || 'Internal server error' });
+      res.status(status).json({ ok: false, message: err.message || 'Error interno del servidor' });
     }
   }
 
@@ -21,12 +21,11 @@ class AuthController {
     try {
       const { verification_token } = req.params;
       await AuthService.verifyEmail(verification_token);
-      // redirect to frontend login
       return res.redirect((process.env.FRONTEND_URL || process.env.URL_FRONTEND || '') + '/login');
     } catch (err) {
       console.error('verifyEmail error', err);
       const status = err.status || 500;
-      res.status(status).json({ ok: false, message: err.message || 'Internal server error' });
+      res.status(status).json({ ok: false, message: err.message || 'Error interno del servidor' });
     }
   }
 
@@ -38,7 +37,7 @@ class AuthController {
     } catch (err) {
       console.error('login error', err);
       const status = err.status || 500;
-      res.status(status).json({ ok: false, message: err.message || 'Internal server error' });
+      res.status(status).json({ ok: false, message: err.message || 'Error interno del servidor' });
     }
   }
 }

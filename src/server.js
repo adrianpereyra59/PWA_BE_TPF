@@ -6,6 +6,6 @@ import app from '../app.js';
   await connectMongoDB();
   const PORT = ENVIRONMENT.PORT || 8080;
   app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
+    console.log(`Servidor en el puerto ${PORT}`);
   });
 })();

@@ -26,13 +26,13 @@ if (GMAIL_USER && GMAIL_PASSWORD) {
         pass: testAccount.pass
       }
     });
-    console.info('Using Ethereal account for email testing:', testAccount);
+    console.info('Uso de una cuenta Ethereal para probar el correo electrónico:', testAccount);
   })();
 }
 
 export async function sendMail({ to, subject, html, text }) {
   if (!transporter) {
-    throw new Error('Mailer transporter not initialized');
+    throw new Error('Mailer transporter no inicializado');
   }
   const info = await transporter.sendMail({
     from: process.env.GMAIL_USER || '"No Reply" <no-reply@example.com>',
@@ -42,7 +42,7 @@ export async function sendMail({ to, subject, html, text }) {
     html,
   });
   if (info && info.messageId && info.preview) {
-    console.log('Email sent:', info.messageId, 'preview:', info.preview);
+    console.log('Email enviado:', info.messageId, 'vista previa:', info.preview);
   }
   return info;
 }
