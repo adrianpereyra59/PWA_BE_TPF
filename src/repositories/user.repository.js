@@ -1,4 +1,4 @@
-import Users from '../models/User.model.js';
+import Users from "../models/User.model.js";
 
 class UserRepository {
   static async createUser(name, email, password) {
@@ -24,6 +24,11 @@ class UserRepository {
 
   static async getByEmail(email) {
     return Users.findOne({ email: String(email).toLowerCase().trim(), active: true }).exec();
+  }
+
+  static async getByResetToken(token) {
+    if (!token) return null;
+    return Users.findOne({ reset_token: token }).exec();
   }
 }
 
