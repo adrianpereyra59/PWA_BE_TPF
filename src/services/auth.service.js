@@ -10,7 +10,7 @@ const SALT_ROUNDS = 10;
 class AuthService {
   static async register(username, password, email) {
     const existing = await UserRepository.getByEmail(email);
-    if (existing) throw { status: 400, message: "Correo electrónico en uso" };
+    if (existing) throw { status: 400, message: "Email already in use" };
 
     const password_hashed = await bcrypt.hash(password, SALT_ROUNDS);
     const user = await UserRepository.createUser(username, email, password_hashed);
@@ -22,9 +22,9 @@ class AuthService {
       await sendMail({
         from: ENVIRONMENT.GMAIL_USERNAME || 'no-reply@example.com',
         to: email,
-        subject: "Verifica tu correo electrónico",
+        subject: "verifica tu email",
         html: `<p>Hola ${username || ""},</p>
-               <p>Haz click para verificar: <a href="${verifyUrl}">${verifyUrl}</a></p>`
+               <p>haz clic en el siguiente enlace para verificar tu email: <a href="${verifyUrl}">${verifyUrl}</a></p>`
       });
     } catch (err) {
       console.error("Error al enviar el correo de verificación:", err);
@@ -46,29 +46,36 @@ class AuthService {
 
   static async login(email, password) {
     const user = await UserRepository.getByEmail(email);
-    if (!user) throw { status: 404, message: "Correo electrónico no registrado" };
-    if (!user.verified_email) throw { status: 401, message: "Correo electrónico no verificado" };
+    if (!user) throw { status: 404, message: "Email no registrado" };
+    if (!user.verified_email) throw { status: 401, message: "Email no verificado" };
 
     const ok = await bcrypt.compare(password, user.password);
     if (!ok) throw { status: 401, message: "Credenciales inválidas" };
-
     const token = jwt.sign({ id: user._id, name: user.name, email: user.email, role: "user" }, ENVIRONMENT.JWT_SECRET_KEY, { expiresIn: "7d" });
     return { authorization_token: token, user };
   }
 
+  // NEW: request password reset
   static async forgotPassword(email) {
     const user = await UserRepository.getByEmail(email);
     if (!user) {
-      return { ok: true, message: "Si el correo existe, recibirás instrucciones" };
+      return { ok: true, message: "Si el correo electrónico existe recibirás instrucciones" };
     }
 
     const token = crypto.randomBytes(32).toString("hex");
-    const expiry = new Date(Date.now() + 60 * 60 * 1000);
+    const expiry = new Date(Date.now() + 60 * 60 * 1000); 
 
     await UserRepository.updateById(user._id, { reset_token: token, reset_token_expiry: expiry });
 
-    const frontendResetUrl = (ENVIRONMENT.URL_FRONTEND || "") + `/reset/${token}`;
-    const resetLink = frontendResetUrl || `${ENVIRONMENT.URL_API_BACKEND}/reset/${token}`;
+    let resetLink = null;
+    if (ENVIRONMENT.URL_FRONTEND && String(ENVIRONMENT.URL_FRONTEND).trim() !== "") {
+      resetLink = `${ENVIRONMENT.URL_FRONTEND.replace(/\/$/, "")}/reset/${token}`;
+    } else if (ENVIRONMENT.URL_API_BACKEND && String(ENVIRONMENT.URL_API_BACKEND).trim() !== "") {
+      resetLink = `${ENVIRONMENT.URL_API_BACKEND.replace(/\/$/, "")}/reset/${token}`;
+    } else {
+
+      resetLink = `/reset/${token}`;
+    }
 
     try {
       await sendMail({
@@ -81,10 +88,10 @@ class AuthService {
                <p>Si no solicitaste esto, ignora este correo.</p>`
       });
     } catch (err) {
-      console.error("forgotPassword sendMail error:", err);
+      console.error("Error de envío de correo al olvidar mi contraseña:", err);
     }
 
-    return { ok: true, message: "Si el correo existe, recibirás instrucciones" };
+    return { ok: true, message: "Si el correo electrónico existe recibirás instrucciones" };
   }
 
   static async resetPassword(token, newPassword) {
